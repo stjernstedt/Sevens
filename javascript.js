@@ -2,6 +2,7 @@ function createCard(color, number) {
 	const card = document.createElement("div");
 	card.classList.add("card");
 	card.number = number;
+	card.color = color;
 	switch (color) {
 		case 1:
 			card.textContent = "♥" + number;
@@ -51,6 +52,8 @@ function addCardToHand(card) {
 
 function addCardToBoard(card) {
 	card.style.gridColumn = card.number;
+	card.style.gridRow = card.color;
+	console.log(card.style.gridColumn);
 	board.push(card);
 	hand.splice(hand.indexOf(card), 1);
 	document.querySelector("#gameboard").appendChild(card);

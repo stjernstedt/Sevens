@@ -2,7 +2,7 @@
 	display: grid;
 	grid-template-rows: 3fr 1fr;
 	position: fixed;
-	margin: 30px;
+	margin: 0px;
 	top: 0;
 	left: 0;
 	bottom: 0;
