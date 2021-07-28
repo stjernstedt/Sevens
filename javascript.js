@@ -24,6 +24,7 @@ function createCard(color, number) {
 
 let deck = [];
 let hand = [];
+let board = [];
 
 function createDeck() {
 	for (let color = 1; color <= 4; color++) {
@@ -48,9 +49,9 @@ function addCardToHand(card) {
 	document.querySelector("#cardholder").appendChild(card);
 }
 
-function addCardToDeck(card) {
+function addCardToBoard(card) {
 	card.style.gridColumn = card.number;
-	deck.push(card);
+	board.push(card);
 	hand.splice(hand.indexOf(card), 1);
 	document.querySelector("#gameboard").appendChild(card);
 	card.removeEventListener("click", playCard);
@@ -58,7 +59,7 @@ function addCardToDeck(card) {
 
 function playCard(e) {
 	const card = e.target;
-	addCardToDeck(card);
+	addCardToBoard(card);
 }
 
 createDeck();
