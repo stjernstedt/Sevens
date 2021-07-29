@@ -1,40 +1,41 @@
 class Deck {
 	constructor() {
 		this.cards = [];
-		this.shuffle = function () {
-			// Fisher-Yates shuffle algorithm
-			for (let i = this.cards.length - 1; i > 0; i--) {
-				let j = Math.floor(Math.random() * (i + 1));
-				[this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]];
-			}
-		};
-
-		this.sortCards = function () {
-			this.cards.sort(function (a, b) { return a.id - b.id; });
-		};
-
-		this.addCard = function (card) {
-			this.cards.push(card);
-		};
-
-		this.popCard = function () {
-			if (this.cards.length == 0)
-				return false;
-			return this.cards.pop();
-		};
-
-		this.getCard = function (card) {
-			return this.cards.splice(this.cards.indexOf(card), 1);
-		};
-
-		this.fillDeck = function () {
-			for (let color = 1; color <= 4; color++) {
-				for (let i = 1; i <= 13; i++) {
-					this.addCard(createCard(color, i));
-				}
-			}
-		};
 	}
+
+	shuffle() {
+		// Fisher-Yates shuffle algorithm
+		for (let i = this.cards.length - 1; i > 0; i--) {
+			let j = Math.floor(Math.random() * (i + 1));
+			[this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]];
+		}
+	};
+
+	sortCards() {
+		this.cards.sort(function (a, b) { return a.id - b.id; });
+	};
+
+	addCard(card) {
+		this.cards.push(card);
+	};
+
+	popCard() {
+		if (this.cards.length == 0)
+			return false;
+		return this.cards.pop();
+	};
+
+	getCard(card) {
+		return this.cards.splice(this.cards.indexOf(card), 1);
+	};
+
+	fillDeck() {
+		for (let color = 1; color <= 4; color++) {
+			for (let i = 1; i <= 13; i++) {
+				this.addCard(createCard(color, i));
+			}
+		}
+	};
 }
 
 function createCard(color, number) {
