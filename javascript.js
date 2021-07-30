@@ -36,11 +36,44 @@ class Deck {
 			}
 		}
 	};
+
+	dealCards(players, cards) {
+		const hands = [];
+		for (let i = 0; i < players; i++) {
+			const hand = new Deck();
+			for (let i = 0; i < cards; i++) {
+				hand.addCard(deck.popCard());
+			}
+			hands.push(hand);
+		}
+		return hands;
+	}
+
+	dealAllCards(players) {
+		const hands = [];
+		for (let i = 0; i < players; i++) {
+			const hand = new Deck();
+			hands.push(hand);
+		}
+
+		let handCount = 0;
+		while (true) {
+			const card = deck.popCard();
+			if (!card) break;
+			hands[handCount].addCard(card);
+			handCount++;
+			if (handCount >= players) handCount = 0;
+		}
+
+		return hands;
+	}
 }
 
 function createCard(color, number) {
 	const card = document.createElement("div");
 	card.classList.add("card");
+	card.classList.add("cardInHand");
+	card.addEventListener("click", playCard);
 	card.id = number + (color * 13);
 	card.number = number;
 	card.color = color;
@@ -50,55 +83,49 @@ function createCard(color, number) {
 			card.style.color = "#ff0000";
 			break;
 		case 2:
-			card.textContent = "♠" + number;
+			card.textContent = "♣" + number;
 			break;
 		case 3:
 			card.textContent = "♦" + number;
 			card.style.color = "#ff0000";
 			break;
 		case 4:
-			card.textContent = "♣" + number;
+			card.textContent = "♠" + number;
 			break;
 	}
 
 	return card;
 }
 
-
-function fillHand() {
-	while (true) {
-		const card = deck.popCard();
-		if (!card) break;
-		addCardToHand(card);
-	}
-}
-
-function addCardToHand(card) {
-	hand.addCard(card);
-	card.addEventListener("click", playCard);
-	document.querySelector("#cardholder").appendChild(card);
-}
-
-function addCardToBoard(card) {
+//fix for multiple hands
+function playCard(e) {
+	const card = e.target;
+	card.classList.remove("cardInHand");
 	card.style.gridColumn = card.number;
 	card.style.gridRow = card.color;
-	console.log(hand.cards.length);
-	board.addCard(hand.getCard(card));
+	board.addCard(hands[0].getCard(card));
 	document.querySelector("#gameboard").appendChild(card);
 	card.removeEventListener("click", playCard);
 }
 
-function playCard(e) {
-	const card = e.target;
-	addCardToBoard(card);
+function redrawHand() {
+	const cardHolder = document.querySelector("#cardholder");
+	hands[0].sortCards();
+	let cards = hands[0].cards;
+	for (let i = 0; i < cards.length; i++) {
+		if (cardHolder.contains(cards[i])) {
+			cardHolder.removeChild(cards[i]);
+		}
+	}
+	for (let i = 0; i < cards.length; i++) {
+		cardHolder.appendChild(cards[i]);
+	}
+
 }
 
 let deck = new Deck();
 deck.fillDeck();
 deck.shuffle();
-let hand = new Deck();
 let board = new Deck();
-
-fillHand();
-// TODO add some kind of redraw function
-// hand.sortCards();
+let hands = deck.dealAllCards(3);
+redrawHand();
