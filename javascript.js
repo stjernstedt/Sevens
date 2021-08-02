@@ -26,13 +26,13 @@ class Deck {
 	};
 
 	getCard(card) {
-		return this.cards.splice(this.cards.indexOf(card), 1);
+		return this.cards.splice(this.cards.indexOf(card), 1)[0];
 	};
 
 	fillDeck() {
-		for (let color = 1; color <= 4; color++) {
+		for (let suit = 1; suit <= 4; suit++) {
 			for (let i = 1; i <= 13; i++) {
-				this.addCard(createCard(color, i));
+				this.addCard(new Card(suit, i));
 			}
 		}
 	};
@@ -69,43 +69,48 @@ class Deck {
 	}
 }
 
-function createCard(color, number) {
-	const card = document.createElement("div");
-	card.classList.add("card");
-	card.classList.add("cardInHand");
-	card.addEventListener("click", playCard);
-	card.id = number + (color * 13);
-	card.number = number;
-	card.color = color;
-	switch (color) {
-		case 1:
-			card.textContent = "♥" + number;
-			card.style.color = "#ff0000";
-			break;
-		case 2:
-			card.textContent = "♣" + number;
-			break;
-		case 3:
-			card.textContent = "♦" + number;
-			card.style.color = "#ff0000";
-			break;
-		case 4:
-			card.textContent = "♠" + number;
-			break;
-	}
+class Card {
+	constructor(suit, number) {
+		this.suit = suit;
+		this.number = number;
+		this.id = number + (suit * 13);
+		this.divElement = document.createElement("div");
+		this.divElement.classList.add("card");
+		this.divElement.classList.add("cardInHand");
+		this.divElement.addEventListener("click", playCard);
+		this.divElement.card = this;
+		switch (suit) {
+			case 1:
+				this.divElement.textContent = "♥" + number;
+				this.divElement.style.color = "#ff0000";
+				break;
+			case 2:
+				this.divElement.textContent = "♣" + number;
+				break;
+			case 3:
+				this.divElement.textContent = "♦" + number;
+				this.divElement.style.color = "#ff0000";
+				break;
+			case 4:
+				this.divElement.textContent = "♠" + number;
+				break;
+		}
 
-	return card;
+	}
 }
 
 //fix for multiple hands
 function playCard(e) {
-	const card = e.target;
-	card.classList.remove("cardInHand");
-	card.style.gridColumn = card.number;
-	card.style.gridRow = card.color;
-	board.addCard(hands[0].getCard(card));
-	document.querySelector("#gameboard").appendChild(card);
-	card.removeEventListener("click", playCard);
+	const cardDivElement = e.target;
+	if (isPlayable(cardDivElement.card)) {
+		cardDivElement.classList.remove("cardDivElementInHand");
+		cardDivElement.style.gridColumn = cardDivElement.card.number;
+		cardDivElement.style.gridRow = cardDivElement.card.suit;
+		board.addCard(hands[0].getCard(cardDivElement.card));
+		console.log(board.cards[0]);
+		document.querySelector("#gameboard").appendChild(cardDivElement);
+		cardDivElement.removeEventListener("click", playCard);
+	}
 }
 
 function redrawHand() {
@@ -113,14 +118,27 @@ function redrawHand() {
 	hands[0].sortCards();
 	let cards = hands[0].cards;
 	for (let i = 0; i < cards.length; i++) {
-		if (cardHolder.contains(cards[i])) {
-			cardHolder.removeChild(cards[i]);
+		if (cardHolder.contains(cards[i].divElement)) {
+			cardHolder.removeChild(cards[i].divElement);
 		}
 	}
 	for (let i = 0; i < cards.length; i++) {
-		cardHolder.appendChild(cards[i]);
+		cardHolder.appendChild(cards[i].divElement);
 	}
 
+}
+
+function isPlayable(card) {
+	if (card.number == 7) return true;
+	for (let i = 0; i < board.cards.length; i++) {
+		if (card.number < 7) {
+			if (board.cards[i].number == card.number + 1) return true;
+		}
+		if (card.number > 7) {
+			if (board.cards[i].number == card.number - 1) return true;
+		}
+	}
+	return false;
 }
 
 let deck = new Deck();
@@ -129,3 +147,28 @@ deck.shuffle();
 let board = new Deck();
 let hands = deck.dealAllCards(3);
 redrawHand();
+
+// class TestClass {
+// 	constructor() {
+// 		this.cards = [];
+// 	}
+// }
+
+// class TestObject {
+// 	constructor() {
+// 		this.number = 1;
+// 	}
+
+// 	testFunction() {
+
+// 	}
+// }
+
+// test = new TestClass();
+// test.cards.push(new TestObject());
+// test.cards.push(new TestObject());
+// console.log(test.cards);
+
+//AI
+// weighted decisions, how many of same suit still in hand
+// just increase chance, not always best decision
