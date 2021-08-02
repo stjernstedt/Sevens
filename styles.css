@@ -10,6 +10,7 @@
 }
 
 #gameboard {
+	background-color: darkgreen;
 	display: grid;
 	width: 100vw;
 	justify-items: center;
@@ -20,6 +21,7 @@
 }
 
 #cardholder {
+	background-color: darkgreen;
 	display: flex;
 	width: 100%;
 	flex-direction: row;
@@ -41,7 +43,7 @@
 }
 
 .cardInHand {
-	margin-right: -75px;
+	margin-right: -40px;
 }
 
 .card:hover {

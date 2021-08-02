@@ -29,6 +29,15 @@ class Deck {
 		return this.cards.splice(this.cards.indexOf(card), 1)[0];
 	};
 
+	findCardById(id) {
+		for (let i = 0; i < this.cards.length; i++) {
+			if (this.cards[i].id == id) {
+				return this.cards[i];
+			}
+		}
+		return false;
+	}
+
 	fillDeck() {
 		for (let suit = 1; suit <= 4; suit++) {
 			for (let i = 1; i <= 13; i++) {
@@ -73,11 +82,12 @@ class Card {
 	constructor(suit, number) {
 		this.suit = suit;
 		this.number = number;
-		this.id = number + (suit * 13);
+		this.id = number + ((suit - 1) * 13);
 		this.divElement = document.createElement("div");
 		this.divElement.classList.add("card");
 		this.divElement.classList.add("cardInHand");
-		this.divElement.addEventListener("click", playCard);
+		this.divElement.addEventListener("click", cardClickHandler);
+		this.divElement.addEventListener("click", reportId);
 		this.divElement.card = this;
 		switch (suit) {
 			case 1:
@@ -99,18 +109,22 @@ class Card {
 	}
 }
 
-//fix for multiple hands
-function playCard(e) {
-	const cardDivElement = e.target;
-	if (isPlayable(cardDivElement.card)) {
-		cardDivElement.classList.remove("cardDivElementInHand");
-		cardDivElement.style.gridColumn = cardDivElement.card.number;
-		cardDivElement.style.gridRow = cardDivElement.card.suit;
-		board.addCard(hands[0].getCard(cardDivElement.card));
-		console.log(board.cards[0]);
-		document.querySelector("#gameboard").appendChild(cardDivElement);
-		cardDivElement.removeEventListener("click", playCard);
+function playCard(hand, card) {
+	if (isPlayable(card)) {
+		card.divElement.classList.remove("cardInHand");
+		card.divElement.style.gridColumn = card.number;
+		card.divElement.style.gridRow = card.suit;
+		board.addCard(hands[hand].getCard(card));
+		document.querySelector("#gameboard").appendChild(card.divElement);
+		card.divElement.removeEventListener("click", cardClickHandler);
+		playerTurn++;
 	}
+}
+
+function cardClickHandler(e) {
+	// console.log("player played----------");
+	playCard(0, e.target.card);
+	playRound();
 }
 
 function redrawHand() {
@@ -132,13 +146,59 @@ function isPlayable(card) {
 	if (card.number == 7) return true;
 	for (let i = 0; i < board.cards.length; i++) {
 		if (card.number < 7) {
-			if (board.cards[i].number == card.number + 1) return true;
+			if (board.cards[i].id == card.id + 1) {
+				// console.log("board card: " + board.cards[i].id);
+				// console.log("      card: " + card.id);
+				// console.log("-----------");
+				return true;
+			}
 		}
 		if (card.number > 7) {
-			if (board.cards[i].number == card.number - 1) return true;
+			if (board.cards[i].id == card.id - 1) {
+				// console.log("board card: " + board.cards[i].id);
+				// console.log("      card: " + card.id);
+				// console.log("-----------");
+				return true
+			};
 		}
 	}
 	return false;
+}
+
+function findFirstPlayer() {
+	for (let i = 0; i < hands.length; i++) {
+		if (hands[i].findCardById(7)) return i;
+	}
+}
+
+function playRound() {
+	if (board.cards.length == 0) {
+		let card = hands[playerTurn].findCardById(7);
+		playCard(playerTurn, card);
+	}
+
+	if (playerTurn >= hands.length) playerTurn = 0;
+	let canditates = [];
+	if (playerTurn != 0) {
+		for (let i = 0; i < hands[playerTurn].cards.length; i++) {
+			if (isPlayable(hands[playerTurn].cards[i])) {
+				canditates.push(hands[playerTurn].cards[i]);
+			}
+		}
+		if (canditates.length == 0) {
+			console.log("can't play");
+			playerTurn++;
+			playRound();
+		} else {
+			playCard(playerTurn, canditates[0]);
+			canditates = [];
+			playRound();
+		}
+	}
+}
+
+function reportId(e) {
+	console.log(e.target.card.id);
 }
 
 let deck = new Deck();
@@ -147,27 +207,9 @@ deck.shuffle();
 let board = new Deck();
 let hands = deck.dealAllCards(3);
 redrawHand();
+let playerTurn = findFirstPlayer();
+playRound();
 
-// class TestClass {
-// 	constructor() {
-// 		this.cards = [];
-// 	}
-// }
-
-// class TestObject {
-// 	constructor() {
-// 		this.number = 1;
-// 	}
-
-// 	testFunction() {
-
-// 	}
-// }
-
-// test = new TestClass();
-// test.cards.push(new TestObject());
-// test.cards.push(new TestObject());
-// console.log(test.cards);
 
 //AI
 // weighted decisions, how many of same suit still in hand
