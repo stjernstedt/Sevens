@@ -1,6 +1,6 @@
 #container {
 	display: grid;
-	grid-template-rows: 3fr 1fr;
+	grid-template-rows: 1fr 3fr 1fr;
 	position: fixed;
 	margin: 0px;
 	top: 0;
@@ -20,7 +20,23 @@
 	border: solid grey 1px;
 }
 
-#cardholder {
+#computerCardHolder {
+	display: grid;
+	width: 100vw;
+	grid-template-columns: 1fr 1fr;
+	background-color: darkgreen;
+	border: solid grey 1px;
+}
+
+.computerCards {
+	display: flex;
+	width: 100%;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+}
+
+#cardHolder {
 	background-color: darkgreen;
 	display: flex;
 	width: 100%;
@@ -37,13 +53,21 @@
 	font-size: 1.5rem;
 	width: 100px;
 	height: 150px;
-	margin: 10px 5px;
+	margin: 5px 5px;
 	transition-timing-function: ease-in-out;
 	transition-duration: 100ms, 100ms;
 }
 
 .cardInHand {
 	margin-right: -40px;
+}
+
+.cardInComputerHand {
+	background-image: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/330485/card_back_pattern.png');
+	width: 80px;
+	height: 120px;
+	font-size: 0px;
+	margin-right: -60px;
 }
 
 .card:hover {

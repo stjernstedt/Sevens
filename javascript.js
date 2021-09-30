@@ -84,6 +84,7 @@ class Card {
 		this.number = number;
 		this.id = number + ((suit - 1) * 13);
 		this.divElement = document.createElement("div");
+		this.divElement.id = this.id;
 		this.divElement.classList.add("card");
 		this.divElement.classList.add("cardInHand");
 		this.divElement.addEventListener("click", cardClickHandler);
@@ -112,6 +113,7 @@ class Card {
 function playCard(hand, card) {
 	if (isPlayable(card)) {
 		card.divElement.classList.remove("cardInHand");
+		card.divElement.classList.remove("cardInComputerHand");
 		card.divElement.style.gridColumn = card.number;
 		card.divElement.style.gridRow = card.suit;
 		board.addCard(hands[hand].getCard(card));
@@ -128,7 +130,7 @@ function cardClickHandler(e) {
 }
 
 function redrawHand() {
-	const cardHolder = document.querySelector("#cardholder");
+	const cardHolder = document.querySelector("#cardHolder");
 	hands[0].sortCards();
 	let cards = hands[0].cards;
 	for (let i = 0; i < cards.length; i++) {
@@ -139,7 +141,24 @@ function redrawHand() {
 	for (let i = 0; i < cards.length; i++) {
 		cardHolder.appendChild(cards[i].divElement);
 	}
+}
 
+function redrawComputerHands() {
+	const cardHolders = document.querySelectorAll(".computerCards");
+	for (let i = 0; i < 2; i++) {
+		hands[i + 1].sortCards();
+		let cards = hands[i + 1].cards;
+
+		for (let j = 0; j < cards.length; j++) {
+			cards[j].divElement.classList.add("cardInComputerHand");
+			if (cardHolders[i].contains(cards[j].divElement)) {
+				cardHolders[i].removeChild(cards[j].divElement);
+			}
+		}
+		for (let j = 0; j < cards.length; j++) {
+			cardHolders[i].appendChild(cards[j].divElement);
+		}
+	}
 }
 
 function isPlayable(card) {
@@ -207,6 +226,7 @@ deck.shuffle();
 let board = new Deck();
 let hands = deck.dealAllCards(3);
 redrawHand();
+redrawComputerHands();
 let playerTurn = findFirstPlayer();
 playRound();
 
