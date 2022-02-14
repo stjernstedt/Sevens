@@ -119,6 +119,10 @@ function playCard(hand, card) {
 		board.addCard(hands[hand].getCard(card));
 		document.querySelector("#gameboard").appendChild(card.divElement);
 		card.divElement.removeEventListener("click", cardClickHandler);
+		if (hands[hand].cards.length == 0) {
+			playerTurn == 0 ? gameOver(true) : gameOver(false);
+		}
+
 		playerTurn++;
 	}
 }
@@ -220,15 +224,29 @@ function reportId(e) {
 	console.log(e.target.card.id);
 }
 
-let deck = new Deck();
-deck.fillDeck();
-deck.shuffle();
-let board = new Deck();
-let hands = deck.dealAllCards(3);
-redrawHand();
-redrawComputerHands();
-let playerTurn = findFirstPlayer();
-playRound();
+function gameOver(isPlayer) {
+	isPlayer ? alert("You Win!") : alert("You lose!");
+	newGame();
+}
+
+function newGame() {
+	let gameBoard = document.querySelector("#gameboard");
+	while (gameBoard.hasChildNodes()) {
+		gameBoard.removeChild(gameBoard.firstChild);
+	}
+	deck = new Deck();
+	deck.fillDeck();
+	deck.shuffle();
+	board = new Deck();
+	hands = deck.dealAllCards(3);
+	redrawHand();
+	redrawComputerHands();
+	playerTurn = findFirstPlayer();
+	playRound();
+}
+
+let deck, board, hands, playerTurn;
+newGame();
 
 
 //AI
