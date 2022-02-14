@@ -88,7 +88,7 @@ class Card {
 		this.divElement.classList.add("card");
 		this.divElement.classList.add("cardInHand");
 		this.divElement.addEventListener("click", cardClickHandler);
-		this.divElement.addEventListener("click", reportId);
+		// this.divElement.addEventListener("click", reportId);
 		this.divElement.card = this;
 		switch (suit) {
 			case 1:
@@ -202,17 +202,17 @@ function playRound() {
 
 	if (playerTurn >= hands.length) playerTurn = 0;
 	let canditates = [];
-	if (playerTurn != 0) {
-		for (let i = 0; i < hands[playerTurn].cards.length; i++) {
-			if (isPlayable(hands[playerTurn].cards[i])) {
-				canditates.push(hands[playerTurn].cards[i]);
-			}
+	for (let i = 0; i < hands[playerTurn].cards.length; i++) {
+		if (isPlayable(hands[playerTurn].cards[i])) {
+			canditates.push(hands[playerTurn].cards[i]);
 		}
-		if (canditates.length == 0) {
-			console.log("can't play");
-			playerTurn++;
-			playRound();
-		} else {
+	}
+	if (canditates.length == 0) {
+		console.log("can't play");
+		playerTurn++;
+		playRound();
+	} else {
+		if (playerTurn != 0) {
 			playCard(playerTurn, canditates[0]);
 			canditates = [];
 			playRound();
